@@ -24,8 +24,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Main interface for obtaining and managing FlexLock's.
+ */
 @NoArgsConstructor
 public class FlexLockRegistry {
+
+  public static long DEFAULT_POLLING_INTERVAL_IN_MILLISECONDS = 100;
 
   private static class Mutex {
     final String key;
@@ -40,17 +45,30 @@ public class FlexLockRegistry {
 
   private final FlexLockHandlePool<Mutex> handles = new FlexLockHandlePool<Mutex>();
   private final Map<String, Mutex> locks = new HashMap<String, Mutex>();
+
   @Getter
   @Setter
   private FlexLockAdapter adapter = null;
+
   @Getter
   @Setter
-  private long pollingIntervalInMilliseconds = 100;
+  private long pollingIntervalInMilliseconds = DEFAULT_POLLING_INTERVAL_IN_MILLISECONDS;
 
+  /**
+   * Constructor
+   * 
+   * @param adapter the adapter to use for creating new FlexLock's.
+   */
   public FlexLockRegistry(FlexLockAdapter adapter) {
     this.adapter = adapter;
   }
 
+  /**
+   * Unlocks a FlexLock even if the caller is not the current owner of the lock.
+   * 
+   * @param key the key identifying the lock
+   * @throws FlexLockException unexpected adapter exception
+   */
   public void forceUnlock(String key) throws FlexLockException {
     final Mutex mutex = getMutex(key);
     if (mutex == null)
@@ -76,12 +94,19 @@ public class FlexLockRegistry {
     }
   }
 
+  /**
+   * Returns a mutex from the registry, creating one if needed.
+   * 
+   * @param key the key identifying the lock
+   * @throws FlexLockException unexpected exception
+   * @return a new or existing mutex
+   */
   private synchronized Mutex getMutex(String key) throws FlexLockException {
     Mutex mutex = locks.get(key);
     if (mutex == null) {
       if (adapter != null) {
         try {
-          adapter.verifyKey(key);
+          adapter.ensureKeyExistsCreatingIfNessessary(key);
         } catch (Exception e) {
           throw new FlexLockException(e);
         }
@@ -92,6 +117,16 @@ public class FlexLockRegistry {
     return mutex;
   }
 
+  /**
+   * Locks a FlexLock. This will block until lock is obtained.
+   * 
+   * @param key the key identifying the lock
+   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only applied if it does
+   *        not get unlocked in time.
+   * @return A handle to the FlexLock
+   * @throws InterruptedException if thread is interrupted
+   * @throws FlexLockException unexpected adapter exception
+   */
   public FlexLockHandle lock(String key, int maxTimeInMilliseconds)
       throws InterruptedException, FlexLockException {
     final Mutex mutex = getMutex(key);
@@ -111,6 +146,15 @@ public class FlexLockRegistry {
     }
   }
 
+  /**
+   * Obtain the lock with the assumption that the thread is already synchronized.
+   * 
+   * @param mutex the mutex
+   * @param maxTimeInMilliseconds the maximum time to hold the lock
+   * @return the handle
+   * @throws FlexLockException unexpected adapter exception
+   * @throws AlreadyLockedException if the FlexLock is already locked.
+   */
   private FlexLockHandle lockWhileSynchronized(Mutex mutex, int maxTimeInMilliseconds)
       throws FlexLockException {
 
@@ -145,6 +189,16 @@ public class FlexLockRegistry {
     throw err == null ? new AlreadyLockedException() : err;
   }
 
+  /**
+   * Tries to obtain a lock without blocking.
+   * 
+   * @param key the key identifying the lock
+   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only applied if it does
+   *        not get unlocked in time.
+   * @return the handle
+   * @throws FlexLockException unexpected adapter exception
+   * @throws AlreadyLockedException if the FlexLock is already locked.
+   */
   public FlexLockHandle tryLock(String key, int maxTimeInMilliseconds)
       throws AlreadyLockedException, FlexLockException {
     final Mutex mutex = getMutex(key);
@@ -153,6 +207,12 @@ public class FlexLockRegistry {
     }
   }
 
+  /**
+   * Unlocks a lock. An non-existing lock or already expired lock is ignored.
+   * 
+   * @param handle handle to lock.
+   * @throws FlexLockException unexpected adapter exception.
+   */
   public void unlock(FlexLockHandle handle) throws FlexLockException {
     if (handle == null)
       return;

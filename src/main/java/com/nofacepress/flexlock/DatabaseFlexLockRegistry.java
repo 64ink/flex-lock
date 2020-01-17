@@ -16,6 +16,9 @@ package com.nofacepress.flexlock;
 import java.sql.SQLException;
 import com.nofacepress.flexlock.adapter.DatabaseFlexLockAdapter;
 
+/**
+ * M
+ */
 public class DatabaseFlexLockRegistry extends FlexLockRegistry {
 
   public DatabaseFlexLockRegistry(String dbDriver, String dbUrl, String dbUser, String dbPassword)

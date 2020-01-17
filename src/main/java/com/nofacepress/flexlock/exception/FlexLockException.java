@@ -13,12 +13,12 @@
  */
 package com.nofacepress.flexlock.exception;
 
+/**
+ * Base exception for FlexLock package.
+ */
 public class FlexLockException extends Exception {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 9057682550538084210L;
+  private static final long serialVersionUID = 487017800187909871L;
 
   public FlexLockException() {}
 

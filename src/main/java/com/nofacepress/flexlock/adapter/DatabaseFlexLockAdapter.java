@@ -17,11 +17,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import com.nofacepress.flexlock.handle.FlexLockHandle;
 import lombok.ToString;
 
+/**
+ * Internal class for handling lock activity from a database.
+ */
 @ToString
 public class DatabaseFlexLockAdapter implements FlexLockAdapter {
 
@@ -71,6 +73,37 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
     if (dbUser != null && !dbUser.isEmpty()) {
       connectionPool.setUsername(dbUser);
       connectionPool.setPassword(dbPassword);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see com.dtis.common.mutex.MutexAdapter#ensureKeyExistsCreatingIfNessessary(java.lang.String)
+   */
+  public void ensureKeyExistsCreatingIfNessessary(String key) throws Exception {
+    PreparedStatement stmt = null;
+    Connection connection = null;
+    try {
+      connection = connectionPool.getConnection();
+      stmt = connection.prepareStatement(mutexExistsStatementSql);
+      stmt.setString(1, key);
+      ResultSet results = stmt.executeQuery();
+      if (!results.next()) {
+        // need to insert it
+        stmt.close();
+        stmt = null;
+        stmt = connection.prepareStatement(insertMutexStatementSql);
+        stmt.setString(1, key);
+        stmt.executeUpdate();
+      }
+    } catch (SQLException e) {
+      throw e;
+    } finally {
+      if (stmt != null)
+        stmt.close();
+      if (connection != null)
+        connection.close();
     }
   }
 
@@ -141,37 +174,6 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
       stmt.setString(1, key);
       stmt.setString(2, handle.getUuid());
       stmt.executeUpdate();
-    } catch (SQLException e) {
-      throw e;
-    } finally {
-      if (stmt != null)
-        stmt.close();
-      if (connection != null)
-        connection.close();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see com.dtis.common.mutex.MutexAdapter#verifyKey(java.lang.String)
-   */
-  public void verifyKey(String key) throws Exception {
-    PreparedStatement stmt = null;
-    Connection connection = null;
-    try {
-      connection = connectionPool.getConnection();
-      stmt = connection.prepareStatement(mutexExistsStatementSql);
-      stmt.setString(1, key);
-      ResultSet results = stmt.executeQuery();
-      if (!results.next()) {
-        // need to insert it
-        stmt.close();
-        stmt = null;
-        stmt = connection.prepareStatement(insertMutexStatementSql);
-        stmt.setString(1, key);
-        stmt.executeUpdate();
-      }
     } catch (SQLException e) {
       throw e;
     } finally {

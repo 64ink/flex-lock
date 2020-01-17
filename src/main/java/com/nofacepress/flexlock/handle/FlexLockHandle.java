@@ -14,15 +14,23 @@
 package com.nofacepress.flexlock.handle;
 
 import java.util.UUID;
-
 import lombok.Data;
 
+/**
+ * Handle representing the instance of a locked FlexLock. This is intended to be accessed via the
+ * FlexLockHandlePool.
+ */
 @Data
 public class FlexLockHandle {
 
   private final Integer index;
   private final String uuid = UUID.randomUUID().toString();
 
+  /**
+   * Constructor
+   * 
+   * @param index the index in the FlexLockHandlePool.
+   */
   FlexLockHandle(Integer index) {
     this.index = index;
   }

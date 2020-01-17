@@ -13,6 +13,9 @@
  */
 package com.nofacepress.flexlock.exception;
 
+/**
+ * Exception indicating that the lock has already been taken.
+ */
 public class AlreadyLockedException extends FlexLockException {
 
   private static final long serialVersionUID = -6441687340338559460L;

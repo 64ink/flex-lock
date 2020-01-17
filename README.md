@@ -1,6 +1,6 @@
 # Flex Lock
 
-This is a sprint boot project that provide a method to lock shared network resources using a database with a flexible interface that allows for simple locking with-in an application as well.
+Flexible lock interface for locking shared network resources using a database or for simple locking with-in an application.
 
  Build status: [![build_status](https://travis-ci.org/nofacepress/flex-lock.svg?branch=master)](https://travis-ci.org/nofacepress/flex-lock)
 
@@ -10,15 +10,15 @@ This is a sprint boot project that provide a method to lock shared network resou
 <dependency>
   <groupId>com.nofacepress</groupId>
   <artifactId>flex-lock</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
 ## Usage Example
 
 ```java
-		VirtualMutexRegistry registry = new DatabaseMutexRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
-		VirtualMutexHandle handle = registry.lock("key", 1000);
+		FlexLockRegistry registry = new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
+		FlexLockHandle handle = registry.lock("key", 1000);
 		registry.unlock(handle);
 ```
 
