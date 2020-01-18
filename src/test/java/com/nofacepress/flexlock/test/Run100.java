@@ -24,7 +24,7 @@ import org.junit.runners.model.InitializationError;
 public class Run100 extends Runner {
 
   private static final int MAX_RUN_COUNT = 100;
-  private Runner runner;
+  private final Runner runner;
 
   public Run100(final Class<?> testClass) throws InitializationError {
     runner = new BlockJUnit4ClassRunner(testClass);
@@ -45,12 +45,12 @@ public class Run100 extends Runner {
       int runCount = 0;
 
       @Override
-      public void testFailure(@SuppressWarnings("unused") final Failure failure) throws Exception {
+      public void testFailure(final Failure failure) throws Exception {
         shouldContinue = false;
       }
 
       @Override
-      public void testFinished(@SuppressWarnings("unused") Description description)
+      public void testFinished(final Description description)
           throws Exception {
         runCount++;
 

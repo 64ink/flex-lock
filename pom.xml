@@ -5,7 +5,7 @@
 
 	<groupId>com.nofacepress</groupId>
 	<artifactId>flex-lock</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>flex-lock</name>
@@ -113,7 +113,7 @@
 
 	<profiles>
 		<profile>
-			<!-- mvn clean deploy -P release-sign-artifacts -->
+			<!-- mvn clean install -P release-sign-artifacts -->
 			<id>release-sign-artifacts</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>

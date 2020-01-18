@@ -24,7 +24,6 @@ import com.nofacepress.flexlock.DatabaseFlexLockRegistry;
 import com.nofacepress.flexlock.FlexLockRegistry;
 import com.nofacepress.flexlock.exception.FlexLockException;
 import com.nofacepress.flexlock.handle.FlexLockHandle;
-import lombok.extern.slf4j.Slf4j;
 
 @RunWith(Run100.class)
 public class DatabaseFlexLockTest {
@@ -39,8 +38,8 @@ public class DatabaseFlexLockTest {
   @Test
   public void testLockAndUnlock()
       throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
-    FlexLockRegistry registry =
-        new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
+    final FlexLockRegistry registry = new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD,
+        DB_TABLE_NAME);
     FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     handle = registry.lock("key", 1000);
@@ -48,36 +47,33 @@ public class DatabaseFlexLockTest {
   }
 
   @Test
-  public void testLockExpires()
-      throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
-    FlexLockRegistry registry =
-        new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
-    long start = System.currentTimeMillis();
-    FlexLockHandle handle = registry.lock("key", 500);
-    FlexLockHandle handle2 = registry.lock("key", 1000);
-    long stop = System.currentTimeMillis();
+  public void testLockExpires() throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
+    final FlexLockRegistry registry = new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD,
+        DB_TABLE_NAME);
+    final long start = System.currentTimeMillis();
+    final FlexLockHandle handle = registry.lock("key", 500);
+    final FlexLockHandle handle2 = registry.lock("key", 1000);
+    final long stop = System.currentTimeMillis();
     registry.unlock(handle);
     registry.unlock(handle2);
-    long diff = stop - start;
+    final long diff = stop - start;
     System.out.printf("stop=%d start=%d diff=%d\n", start, stop, diff);
     assertTrue(diff > 400);
     assertTrue(diff < 600);
   }
 
   @Test
-  public void testUnlockTwice()
-      throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
-    FlexLockRegistry registry =
-        new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
-    FlexLockHandle handle = registry.lock("key", 1000);
+  public void testUnlockTwice() throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
+    final FlexLockRegistry registry = new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD,
+        DB_TABLE_NAME);
+    final FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     registry.unlock(handle);
   }
 
   @Test
-  public void testUnlockNull()
-      throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
-    FlexLockRegistry registry =
+  public void testUnlockNull() throws InterruptedException, FlexLockException, ClassNotFoundException, SQLException {
+    final FlexLockRegistry registry =
         new DatabaseFlexLockRegistry(DB_DRIVER, DB_URL, DB_USER, DB_PASSWORD, DB_TABLE_NAME);
     registry.unlock(null);
   }

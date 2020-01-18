@@ -21,13 +21,13 @@ import com.nofacepress.flexlock.adapter.DatabaseFlexLockAdapter;
  */
 public class DatabaseFlexLockRegistry extends FlexLockRegistry {
 
-  public DatabaseFlexLockRegistry(String dbDriver, String dbUrl, String dbUser, String dbPassword)
-      throws ClassNotFoundException, SQLException {
+  public DatabaseFlexLockRegistry(final String dbDriver, final String dbUrl, final String dbUser,
+      final String dbPassword) throws ClassNotFoundException, SQLException {
     super(new DatabaseFlexLockAdapter(dbDriver, dbUrl, dbUser, dbPassword));
   }
 
-  public DatabaseFlexLockRegistry(String dbDriver, String dbUrl, String dbUser, String dbPassword,
-      String tableName) throws ClassNotFoundException, SQLException {
+  public DatabaseFlexLockRegistry(final String dbDriver, final String dbUrl, final String dbUser,
+      final String dbPassword, final String tableName) throws ClassNotFoundException, SQLException {
     super(new DatabaseFlexLockAdapter(dbDriver, dbUrl, dbUser, dbPassword, tableName));
   }
 }

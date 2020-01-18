@@ -22,20 +22,20 @@ public class AlreadyLockedException extends FlexLockException {
 
   public AlreadyLockedException() {}
 
-  public AlreadyLockedException(String message) {
+  public AlreadyLockedException(final String message) {
     super(message);
   }
 
-  public AlreadyLockedException(String message, Throwable cause) {
+  public AlreadyLockedException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public AlreadyLockedException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public AlreadyLockedException(final String message, final Throwable cause, final boolean enableSuppression,
+      final boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
-  public AlreadyLockedException(Throwable cause) {
+  public AlreadyLockedException(final Throwable cause) {
     super(cause);
   }
 

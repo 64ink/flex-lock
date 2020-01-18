@@ -20,22 +20,23 @@ public class FlexLockException extends Exception {
 
   private static final long serialVersionUID = 487017800187909871L;
 
-  public FlexLockException() {}
+  public FlexLockException() {
+  }
 
-  public FlexLockException(String message) {
+  public FlexLockException(final String message) {
     super(message);
   }
 
-  public FlexLockException(String message, Throwable cause) {
+  public FlexLockException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public FlexLockException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public FlexLockException(final String message, final Throwable cause, final boolean enableSuppression,
+      final boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
-  public FlexLockException(Throwable cause) {
+  public FlexLockException(final Throwable cause) {
     super(cause);
   }
 

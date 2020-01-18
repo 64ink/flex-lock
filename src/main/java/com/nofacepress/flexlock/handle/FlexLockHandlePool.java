@@ -20,15 +20,16 @@ import java.util.Queue;
 import lombok.ToString;
 
 /**
- * Map of handles and objects with a method to reserve access to a single object in the list. This
- * is needed over native locking because the access required is beyond call scope.
+ * Map of handles and objects with a method to reserve access to a single object
+ * in the list. This is needed over native locking because the access required
+ * is beyond call scope.
  *
  * @param <T> the lock implementation class.
  */
 @ToString
 public class FlexLockHandlePool<T> {
 
-  private Object UNUSED = new Object();
+  private final Object UNUSED = new Object();
   private final Queue<FlexLockHandle> availableHandles = new ArrayDeque<FlexLockHandle>();
   private final List<Object> dataStorage = new ArrayList<Object>();
 
@@ -39,8 +40,8 @@ public class FlexLockHandlePool<T> {
    * @return the data held by the handle
    */
   @SuppressWarnings("unchecked")
-  public synchronized T release(FlexLockHandle handle) {
-    Object data = dataStorage.get(handle.getIndex());
+  public synchronized T release(final FlexLockHandle handle) {
+    final Object data = dataStorage.get(handle.getIndex());
     if (data == UNUSED) {
       return null;
     }
@@ -55,8 +56,8 @@ public class FlexLockHandlePool<T> {
    * @param data the data be reserved.
    * @return handle to the data, needed to release the reservation.
    */
-  public synchronized FlexLockHandle reserve(T data) {
-    FlexLockHandle next = availableHandles.poll();
+  public synchronized FlexLockHandle reserve(final T data) {
+    final FlexLockHandle next = availableHandles.poll();
     if (next == null) {
       dataStorage.add(data);
       return new FlexLockHandle(dataStorage.size() - 1);

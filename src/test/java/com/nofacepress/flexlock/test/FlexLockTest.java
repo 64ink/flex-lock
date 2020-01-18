@@ -26,7 +26,7 @@ public class FlexLockTest {
 
   @Test
   public void testLockAndUnlock() throws InterruptedException, FlexLockException {
-    FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry registry = new FlexLockRegistry();
     FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     handle = registry.lock("key", 1000);
@@ -35,11 +35,11 @@ public class FlexLockTest {
 
   @Test
   public void testLockExpires() throws InterruptedException, FlexLockException {
-    FlexLockRegistry registry = new FlexLockRegistry();
-    long start = System.currentTimeMillis();
-    FlexLockHandle handle = registry.lock("key", 500);
-    FlexLockHandle handle2 = registry.lock("key", 1000);
-    long stop = System.currentTimeMillis();
+    final FlexLockRegistry registry = new FlexLockRegistry();
+    final long start = System.currentTimeMillis();
+    final FlexLockHandle handle = registry.lock("key", 500);
+    final FlexLockHandle handle2 = registry.lock("key", 1000);
+    final long stop = System.currentTimeMillis();
     registry.unlock(handle);
     registry.unlock(handle2);
     assertTrue(stop - start > 475);
@@ -48,15 +48,15 @@ public class FlexLockTest {
 
   @Test
   public void testUnlockTwice() throws InterruptedException, FlexLockException {
-    FlexLockRegistry registry = new FlexLockRegistry();
-    FlexLockHandle handle = registry.lock("key", 1000);
+    final FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     registry.unlock(handle);
   }
 
   @Test
   public void testUnlockNull() throws InterruptedException, FlexLockException {
-    FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry registry = new FlexLockRegistry();
     registry.unlock(null);
   }
 }

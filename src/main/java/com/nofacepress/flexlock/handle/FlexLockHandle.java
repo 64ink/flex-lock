@@ -17,8 +17,8 @@ import java.util.UUID;
 import lombok.Data;
 
 /**
- * Handle representing the instance of a locked FlexLock. This is intended to be accessed via the
- * FlexLockHandlePool.
+ * Handle representing the instance of a locked FlexLock. This is intended to be
+ * accessed via the FlexLockHandlePool.
  */
 @Data
 public class FlexLockHandle {
@@ -31,7 +31,7 @@ public class FlexLockHandle {
    * 
    * @param index the index in the FlexLockHandlePool.
    */
-  FlexLockHandle(Integer index) {
+  FlexLockHandle(final Integer index) {
     this.index = index;
   }
 }

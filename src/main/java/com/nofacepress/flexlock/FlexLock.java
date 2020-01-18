@@ -34,7 +34,7 @@ public class FlexLock {
   private FlexLockHandle handle;
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (obj instanceof FlexLock)
       return key.equals(FlexLock.class.cast(obj).key);
     if (obj instanceof String)
@@ -47,11 +47,11 @@ public class FlexLock {
     return key.hashCode();
   }
 
-  void lock(int maxTimeInMilliseconds) throws InterruptedException, FlexLockException {
+  void lock(final int maxTimeInMilliseconds) throws InterruptedException, FlexLockException {
     handle = registry.lock(key, maxTimeInMilliseconds);
   }
 
-  boolean tryLock(int maxTimeInMilliseconds) throws FlexLockException {
+  boolean tryLock(final int maxTimeInMilliseconds) throws FlexLockException {
     handle = registry.tryLock(key, maxTimeInMilliseconds);
     return handle != null;
   }

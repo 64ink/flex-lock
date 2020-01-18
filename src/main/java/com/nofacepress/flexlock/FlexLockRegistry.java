@@ -38,7 +38,7 @@ public class FlexLockRegistry {
     FlexLockHandle handle = null;
     int waiters = 0;
 
-    Mutex(String key) {
+    Mutex(final String key) {
       this.key = key;
     }
   }
@@ -59,7 +59,7 @@ public class FlexLockRegistry {
    * 
    * @param adapter the adapter to use for creating new FlexLock's.
    */
-  public FlexLockRegistry(FlexLockAdapter adapter) {
+  public FlexLockRegistry(final FlexLockAdapter adapter) {
     this.adapter = adapter;
   }
 
@@ -69,7 +69,7 @@ public class FlexLockRegistry {
    * @param key the key identifying the lock
    * @throws FlexLockException unexpected adapter exception
    */
-  public void forceUnlock(String key) throws FlexLockException {
+  public void forceUnlock(final String key) throws FlexLockException {
     final Mutex mutex = getMutex(key);
     if (mutex == null)
       return;
@@ -80,7 +80,7 @@ public class FlexLockRegistry {
       if (adapter != null) {
         try {
           adapter.forceUnlock(mutex.key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           err = new FlexLockException(e);
         }
       }
@@ -101,13 +101,13 @@ public class FlexLockRegistry {
    * @throws FlexLockException unexpected exception
    * @return a new or existing mutex
    */
-  private synchronized Mutex getMutex(String key) throws FlexLockException {
+  private synchronized Mutex getMutex(final String key) throws FlexLockException {
     Mutex mutex = locks.get(key);
     if (mutex == null) {
       if (adapter != null) {
         try {
           adapter.ensureKeyExistsCreatingIfNessessary(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           throw new FlexLockException(e);
         }
       }
@@ -120,27 +120,26 @@ public class FlexLockRegistry {
   /**
    * Locks a FlexLock. This will block until lock is obtained.
    * 
-   * @param key the key identifying the lock
-   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only applied if it does
-   *        not get unlocked in time.
+   * @param key                   the key identifying the lock
+   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only
+   *                              applied if it does not get unlocked in time.
    * @return A handle to the FlexLock
    * @throws InterruptedException if thread is interrupted
-   * @throws FlexLockException unexpected adapter exception
+   * @throws FlexLockException    unexpected adapter exception
    */
-  public FlexLockHandle lock(String key, int maxTimeInMilliseconds)
+  public FlexLockHandle lock(final String key, final int maxTimeInMilliseconds)
       throws InterruptedException, FlexLockException {
     final Mutex mutex = getMutex(key);
     for (;;) {
       synchronized (mutex) {
         try {
           return lockWhileSynchronized(mutex, maxTimeInMilliseconds);
-        } catch (AlreadyLockedException ignoreThisException) {
+        } catch (final AlreadyLockedException ignoreThisException) {
         }
 
         mutex.waiters++;
-        mutex.wait(Math.max(
-            Math.min(pollingIntervalInMilliseconds, mutex.timeout - System.currentTimeMillis() + 1),
-            1));
+        mutex
+            .wait(Math.max(Math.min(pollingIntervalInMilliseconds, mutex.timeout - System.currentTimeMillis() + 1), 1));
         mutex.waiters--;
       }
     }
@@ -149,22 +148,22 @@ public class FlexLockRegistry {
   /**
    * Obtain the lock with the assumption that the thread is already synchronized.
    * 
-   * @param mutex the mutex
+   * @param mutex                 the mutex
    * @param maxTimeInMilliseconds the maximum time to hold the lock
    * @return the handle
-   * @throws FlexLockException unexpected adapter exception
+   * @throws FlexLockException      unexpected adapter exception
    * @throws AlreadyLockedException if the FlexLock is already locked.
    */
-  private FlexLockHandle lockWhileSynchronized(Mutex mutex, int maxTimeInMilliseconds)
+  private FlexLockHandle lockWhileSynchronized(final Mutex mutex, final int maxTimeInMilliseconds)
       throws FlexLockException {
 
-    long now = System.currentTimeMillis();
+    final long now = System.currentTimeMillis();
     if (mutex.handle != null && mutex.timeout >= now) {
       throw new AlreadyLockedException();
     }
 
-    long expireTime = now + maxTimeInMilliseconds;
-    FlexLockHandle handle = handles.reserve(mutex);
+    final long expireTime = now + maxTimeInMilliseconds;
+    final FlexLockHandle handle = handles.reserve(mutex);
 
     if (adapter == null) {
       mutex.timeout = expireTime;
@@ -179,9 +178,9 @@ public class FlexLockRegistry {
         mutex.handle = handle;
         return handle;
       }
-    } catch (FlexLockException e) {
+    } catch (final FlexLockException e) {
       err = e;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       err = new FlexLockException(e);
     }
 
@@ -192,14 +191,14 @@ public class FlexLockRegistry {
   /**
    * Tries to obtain a lock without blocking.
    * 
-   * @param key the key identifying the lock
-   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only applied if it does
-   *        not get unlocked in time.
+   * @param key                   the key identifying the lock
+   * @param maxTimeInMilliseconds the maximum time to hold the lock. This is only
+   *                              applied if it does not get unlocked in time.
    * @return the handle
-   * @throws FlexLockException unexpected adapter exception
+   * @throws FlexLockException      unexpected adapter exception
    * @throws AlreadyLockedException if the FlexLock is already locked.
    */
-  public FlexLockHandle tryLock(String key, int maxTimeInMilliseconds)
+  public FlexLockHandle tryLock(final String key, final int maxTimeInMilliseconds)
       throws AlreadyLockedException, FlexLockException {
     final Mutex mutex = getMutex(key);
     synchronized (mutex) {
@@ -213,7 +212,7 @@ public class FlexLockRegistry {
    * @param handle handle to lock.
    * @throws FlexLockException unexpected adapter exception.
    */
-  public void unlock(FlexLockHandle handle) throws FlexLockException {
+  public void unlock(final FlexLockHandle handle) throws FlexLockException {
     if (handle == null)
       return;
     final Mutex mutex = handles.release(handle);
@@ -226,7 +225,7 @@ public class FlexLockRegistry {
       if (adapter != null) {
         try {
           adapter.unlock(mutex.key, mutex.handle);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           err = new FlexLockException(e);
         }
       }

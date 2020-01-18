@@ -10,7 +10,7 @@ Flexible lock interface for locking shared network resources using a database or
 <dependency>
   <groupId>com.nofacepress</groupId>
   <artifactId>flex-lock</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
 </dependency>
 ```
 

@@ -50,13 +50,13 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
   private final String tryUnlockStatementSql;
   private final String forceUnlockStatementSql;
 
-  public DatabaseFlexLockAdapter(String dbDriver, String dbUrl, String dbUser, String dbPassword)
-      throws SQLException, ClassNotFoundException {
+  public DatabaseFlexLockAdapter(final String dbDriver, final String dbUrl, final String dbUser,
+      final String dbPassword) throws SQLException, ClassNotFoundException {
     this(dbDriver, dbUrl, dbUser, dbPassword, DEFAULT_TABLE_NAME);
   }
 
-  public DatabaseFlexLockAdapter(String dbDriver, String dbUrl, String dbUser, String dbPassword,
-      String tableName) throws SQLException, ClassNotFoundException {
+  public DatabaseFlexLockAdapter(final String dbDriver, final String dbUrl, final String dbUser,
+      final String dbPassword, final String tableName) throws SQLException, ClassNotFoundException {
 
     tryLockStatementSql = SQL.TRY_LOCK_UPDATE.replace(SQL.TABLE_KEY, tableName);
     mutexExistsStatementSql = SQL.MUTEX_EXISTS.replace(SQL.TABLE_KEY, tableName);
@@ -79,16 +79,18 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
   /*
    * (non-Javadoc)
    * 
-   * @see com.dtis.common.mutex.MutexAdapter#ensureKeyExistsCreatingIfNessessary(java.lang.String)
+   * @see
+   * com.dtis.common.mutex.MutexAdapter#ensureKeyExistsCreatingIfNessessary(java.
+   * lang.String)
    */
-  public void ensureKeyExistsCreatingIfNessessary(String key) throws Exception {
+  public void ensureKeyExistsCreatingIfNessessary(final String key) throws Exception {
     PreparedStatement stmt = null;
     Connection connection = null;
     try {
       connection = connectionPool.getConnection();
       stmt = connection.prepareStatement(mutexExistsStatementSql);
       stmt.setString(1, key);
-      ResultSet results = stmt.executeQuery();
+      final ResultSet results = stmt.executeQuery();
       if (!results.next()) {
         // need to insert it
         stmt.close();
@@ -97,7 +99,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
         stmt.setString(1, key);
         stmt.executeUpdate();
       }
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw e;
     } finally {
       if (stmt != null)
@@ -112,7 +114,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
    * 
    * @see com.dtis.common.mutex.MutexAdapter#forceUnlock(java.lang.String)
    */
-  public void forceUnlock(String key) throws Exception {
+  public void forceUnlock(final String key) throws Exception {
     PreparedStatement stmt = null;
     Connection connection = null;
     try {
@@ -120,7 +122,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
       stmt = connection.prepareStatement(forceUnlockStatementSql);
       stmt.setString(1, key);
       stmt.executeUpdate();
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw e;
     } finally {
       if (stmt != null)
@@ -136,7 +138,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
    * @see com.dtis.common.mutex.MutexAdapter#tryLock(java.lang.String,
    * com.dtis.common.mutex.VirtualMutexHandle, long, long)
    */
-  public boolean tryLock(String key, FlexLockHandle handle, long now, long expireTime)
+  public boolean tryLock(final String key, final FlexLockHandle handle, final long now, final long expireTime)
       throws Exception {
     PreparedStatement stmt = null;
     Connection connection = null;
@@ -147,9 +149,9 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
       stmt.setLong(2, expireTime);
       stmt.setString(3, key);
       stmt.setLong(4, now);
-      int updates = stmt.executeUpdate();
+      final int updates = stmt.executeUpdate();
       return updates > 0;
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw e;
     } finally {
       if (stmt != null)
@@ -165,7 +167,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
    * @see com.dtis.common.mutex.MutexAdapter#unlock(java.lang.String,
    * com.dtis.common.mutex.VirtualMutexHandle)
    */
-  public void unlock(String key, FlexLockHandle handle) throws Exception {
+  public void unlock(final String key, final FlexLockHandle handle) throws Exception {
     PreparedStatement stmt = null;
     Connection connection = null;
     try {
@@ -174,7 +176,7 @@ public class DatabaseFlexLockAdapter implements FlexLockAdapter {
       stmt.setString(1, key);
       stmt.setString(2, handle.getUuid());
       stmt.executeUpdate();
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw e;
     } finally {
       if (stmt != null)
