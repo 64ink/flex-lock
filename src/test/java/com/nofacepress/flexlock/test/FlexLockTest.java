@@ -26,7 +26,7 @@ public class FlexLockTest {
 
   @Test
   public void testLockAndUnlock() throws InterruptedException, FlexLockException {
-    final FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry<String> registry = new FlexLockRegistry<String>();
     FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     handle = registry.lock("key", 1000);
@@ -35,7 +35,7 @@ public class FlexLockTest {
 
   @Test
   public void testLockExpires() throws InterruptedException, FlexLockException {
-    final FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry<String> registry = new FlexLockRegistry<String>();
     final long start = System.currentTimeMillis();
     final FlexLockHandle handle = registry.lock("key", 500);
     final FlexLockHandle handle2 = registry.lock("key", 1000);
@@ -48,7 +48,7 @@ public class FlexLockTest {
 
   @Test
   public void testUnlockTwice() throws InterruptedException, FlexLockException {
-    final FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry<String> registry = new FlexLockRegistry<String>();
     final FlexLockHandle handle = registry.lock("key", 1000);
     registry.unlock(handle);
     registry.unlock(handle);
@@ -56,7 +56,7 @@ public class FlexLockTest {
 
   @Test
   public void testUnlockNull() throws InterruptedException, FlexLockException {
-    final FlexLockRegistry registry = new FlexLockRegistry();
+    final FlexLockRegistry<String> registry = new FlexLockRegistry<String>();
     registry.unlock(null);
   }
 }

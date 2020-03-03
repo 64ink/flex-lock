@@ -26,6 +26,10 @@ public class FlexLockHandle {
   private final Integer index;
   private final String uuid = UUID.randomUUID().toString();
 
+  public FlexLockHandle() {
+    this.index = 0;
+  }
+
   /**
    * Constructor
    * 

@@ -19,15 +19,22 @@ import com.nofacepress.flexlock.adapter.DatabaseFlexLockAdapter;
 /**
  * M
  */
-public class DatabaseFlexLockRegistry extends FlexLockRegistry {
+public class DatabaseFlexLockRegistry<KeyType> extends FlexLockRegistry<KeyType> {
 
   public DatabaseFlexLockRegistry(final String dbDriver, final String dbUrl, final String dbUser,
       final String dbPassword) throws ClassNotFoundException, SQLException {
-    super(new DatabaseFlexLockAdapter(dbDriver, dbUrl, dbUser, dbPassword));
+    super(new DatabaseFlexLockAdapter<KeyType>(dbDriver, dbUrl, dbUser, dbPassword));
   }
 
   public DatabaseFlexLockRegistry(final String dbDriver, final String dbUrl, final String dbUser,
       final String dbPassword, final String tableName) throws ClassNotFoundException, SQLException {
-    super(new DatabaseFlexLockAdapter(dbDriver, dbUrl, dbUser, dbPassword, tableName));
+    super(new DatabaseFlexLockAdapter<KeyType>(dbDriver, dbUrl, dbUser, dbPassword, tableName));
+  }
+
+  public DatabaseFlexLockRegistry(final String dbDriver, final String dbUrl, final String dbUser,
+      final String dbPassword, final String tableName, final String primaryKeyName, final String expiresColumnName,
+      final String ownerColumnName) throws ClassNotFoundException, SQLException {
+    super(new DatabaseFlexLockAdapter<KeyType>(dbDriver, dbUrl, dbUser, dbPassword, tableName, primaryKeyName,
+        expiresColumnName, ownerColumnName));
   }
 }

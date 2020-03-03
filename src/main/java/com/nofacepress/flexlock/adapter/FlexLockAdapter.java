@@ -18,7 +18,7 @@ import com.nofacepress.flexlock.handle.FlexLockHandle;
 /**
  * Internal interface for handling lock activity from different sources.
  */
-public interface FlexLockAdapter {
+public interface FlexLockAdapter<KeyType> {
 
   /**
    * Ensure that the key exists, creating a new one if necessary.
@@ -26,7 +26,7 @@ public interface FlexLockAdapter {
    * @param key the key identifying the lock
    * @throws Exception an unexpected error
    */
-  void ensureKeyExistsCreatingIfNessessary(String key) throws Exception;
+  void ensureKeyExistsCreatingIfNessessary(KeyType key) throws Exception;
 
   /**
    * Unlocks a FlexLock even if the caller is not the current owner of the lock.
@@ -34,27 +34,27 @@ public interface FlexLockAdapter {
    * @param key the key identifying the lock
    * @throws Exception any exception for error
    */
-  void forceUnlock(String key) throws Exception;
+  void forceUnlock(KeyType key) throws Exception;
 
   /**
    * Tries to obtain a lock without blocking.
    * 
-   * @param key the key identifying the lock
-   * @param handle the associated handle.
-   * @param now the current time
+   * @param key        the key identifying the lock
+   * @param handle     the associated handle.
+   * @param now        the current time
    * @param expireTime the expiration time for the lock
    * @return true if successful
    * @throws Exception an unexpected error
    */
-  boolean tryLock(String key, FlexLockHandle handle, long now, long expireTime) throws Exception;
+  boolean tryLock(KeyType key, FlexLockHandle handle, long now, long expireTime) throws Exception;
 
   /**
    * Unlocks a lock. An non-existing lock or already expired lock is ignored.
    * 
-   * @param key the key identifying the lock
+   * @param key    the key identifying the lock
    * @param handle the associated handle.
    * @throws Exception an unexpected error
    */
-  void unlock(String key, FlexLockHandle handle) throws Exception;
+  void unlock(KeyType key, FlexLockHandle handle) throws Exception;
 
 }

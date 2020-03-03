@@ -28,27 +28,27 @@ import lombok.Setter;
  * Main interface for obtaining and managing FlexLock's.
  */
 @NoArgsConstructor
-public class FlexLockRegistry {
+public class FlexLockRegistry<KeyType> {
 
   public static long DEFAULT_POLLING_INTERVAL_IN_MILLISECONDS = 100;
 
-  private static class Mutex {
-    final String key;
+  private static class Mutex<KeyType> {
+    final KeyType key;
     long timeout = 0;
     FlexLockHandle handle = null;
     int waiters = 0;
 
-    Mutex(final String key) {
+    Mutex(final KeyType key) {
       this.key = key;
     }
   }
 
-  private final FlexLockHandlePool<Mutex> handles = new FlexLockHandlePool<Mutex>();
-  private final Map<String, Mutex> locks = new HashMap<String, Mutex>();
+  private final FlexLockHandlePool<Mutex<KeyType>> handles = new FlexLockHandlePool<Mutex<KeyType>>();
+  private final Map<KeyType, Mutex<KeyType>> locks = new HashMap<KeyType, Mutex<KeyType>>();
 
   @Getter
   @Setter
-  private FlexLockAdapter adapter = null;
+  private FlexLockAdapter<KeyType> adapter = null;
 
   @Getter
   @Setter
@@ -59,7 +59,7 @@ public class FlexLockRegistry {
    * 
    * @param adapter the adapter to use for creating new FlexLock's.
    */
-  public FlexLockRegistry(final FlexLockAdapter adapter) {
+  public FlexLockRegistry(final FlexLockAdapter<KeyType> adapter) {
     this.adapter = adapter;
   }
 
@@ -69,8 +69,8 @@ public class FlexLockRegistry {
    * @param key the key identifying the lock
    * @throws FlexLockException unexpected adapter exception
    */
-  public void forceUnlock(final String key) throws FlexLockException {
-    final Mutex mutex = getMutex(key);
+  public void forceUnlock(final KeyType key) throws FlexLockException {
+    final Mutex<KeyType> mutex = getMutex(key);
     if (mutex == null)
       return;
     synchronized (mutex) {
@@ -101,8 +101,8 @@ public class FlexLockRegistry {
    * @throws FlexLockException unexpected exception
    * @return a new or existing mutex
    */
-  private synchronized Mutex getMutex(final String key) throws FlexLockException {
-    Mutex mutex = locks.get(key);
+  private synchronized Mutex<KeyType> getMutex(final KeyType key) throws FlexLockException {
+    Mutex<KeyType> mutex = locks.get(key);
     if (mutex == null) {
       if (adapter != null) {
         try {
@@ -111,7 +111,7 @@ public class FlexLockRegistry {
           throw new FlexLockException(e);
         }
       }
-      mutex = new Mutex(key);
+      mutex = new Mutex<KeyType>(key);
       locks.put(key, mutex);
     }
     return mutex;
@@ -127,9 +127,9 @@ public class FlexLockRegistry {
    * @throws InterruptedException if thread is interrupted
    * @throws FlexLockException    unexpected adapter exception
    */
-  public FlexLockHandle lock(final String key, final int maxTimeInMilliseconds)
+  public FlexLockHandle lock(final KeyType key, final int maxTimeInMilliseconds)
       throws InterruptedException, FlexLockException {
-    final Mutex mutex = getMutex(key);
+    final Mutex<KeyType> mutex = getMutex(key);
     for (;;) {
       synchronized (mutex) {
         try {
@@ -154,7 +154,7 @@ public class FlexLockRegistry {
    * @throws FlexLockException      unexpected adapter exception
    * @throws AlreadyLockedException if the FlexLock is already locked.
    */
-  private FlexLockHandle lockWhileSynchronized(final Mutex mutex, final int maxTimeInMilliseconds)
+  private FlexLockHandle lockWhileSynchronized(final Mutex<KeyType> mutex, final int maxTimeInMilliseconds)
       throws FlexLockException {
 
     final long now = System.currentTimeMillis();
@@ -198,9 +198,9 @@ public class FlexLockRegistry {
    * @throws FlexLockException      unexpected adapter exception
    * @throws AlreadyLockedException if the FlexLock is already locked.
    */
-  public FlexLockHandle tryLock(final String key, final int maxTimeInMilliseconds)
+  public FlexLockHandle tryLock(final KeyType key, final int maxTimeInMilliseconds)
       throws AlreadyLockedException, FlexLockException {
-    final Mutex mutex = getMutex(key);
+    final Mutex<KeyType> mutex = getMutex(key);
     synchronized (mutex) {
       return lockWhileSynchronized(mutex, maxTimeInMilliseconds);
     }
@@ -215,7 +215,7 @@ public class FlexLockRegistry {
   public void unlock(final FlexLockHandle handle) throws FlexLockException {
     if (handle == null)
       return;
-    final Mutex mutex = handles.release(handle);
+    final Mutex<KeyType> mutex = handles.release(handle);
     if (mutex == null)
       return;
     synchronized (mutex) {

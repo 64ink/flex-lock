@@ -24,11 +24,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class FlexLock {
+public class FlexLock<KeyType> {
   @Getter
-  private final String key;
+  private final KeyType key;
   @Getter
-  private final FlexLockRegistry registry;
+  private final FlexLockRegistry<KeyType> registry;
   @Getter
   @Setter
   private FlexLockHandle handle;
